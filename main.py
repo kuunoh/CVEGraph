@@ -28,8 +28,12 @@ query = 'CVE -filter:retweets'
 
 cve_counts = dict()
 
+filtre_date = "2021" # date a mettre avec la liste
+
+pattern_filtre =""
+
 # Finding each tweet in english to avoid some bad one
-for tweet in tweepy.Cursor(api.search, lang='en', q=query, since=date_since, tweet_mode="extended").items(100):
+for tweet in tweepy.Cursor(api.search, lang='en', q=query, since=date_since, tweet_mode="extended").items(10):
     print("TWEET FETCHED FROM USER ", tweet.user.name, "\nValue : \n", tweet.full_text, "\n\n")
     pattern = "(?i)(CVE-(1999|2\d{3})-(\d{3,}))"
     x = re.search(pattern, tweet.full_text)
@@ -42,8 +46,19 @@ for tweet in tweepy.Cursor(api.search, lang='en', q=query, since=date_since, twe
             else:
                 cve_counts[value] = 1
 
+        #filtre
+        pattern_filtre = f"(?i)(CVE-"+re.escape(filtre_date)+"-(\d{3,}))"
+        y = re.search(pattern_filtre, tweet.full_text)
+        if y :
+            print ("https://nvd.nist.gov/vuln/detail/" +y.group(0), "\n")
+            print(y.group(0), "CVE matché avec la date", "\n\n\n")
+
+
 print("CVE count : ", cve_counts)
 
+
+
+"""
 # Creating graph
 
 # Converting dictionary to list
@@ -66,3 +81,4 @@ plt.title('Occurrences of CVE on Twitter today')
 
 # show the plot
 plt.show()
+"""
